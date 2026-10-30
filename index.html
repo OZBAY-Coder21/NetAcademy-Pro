@@ -1,0 +1,1246 @@
+<!DOCTYPE html>
+<html lang="tr" class="dark">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>NetAcademy Pro - Ağ Mühendisliği & PWA Eğitimi</title>
+    <!-- Tailwind CSS CDN -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script>
+        tailwind.config = {
+            darkMode: 'class',
+            theme: {
+                extend: {
+                    colors: {
+                        slate: { 850: '#111827', 900: '#0f172a', 950: '#020617' },
+                        cyan: { 400: '#22d3ee', 500: '#06b6d4', 900: '#164e63' },
+                        emerald: { 400: '#34d399', 500: '#10b981' },
+                        violet: { 400: '#a78bfa', 500: '#8b5cf6' }
+                    },
+                    fontFamily: {
+                        sans: ['Inter', 'sans-serif'],
+                        mono: ['Fira Code', 'monospace']
+                    }
+                }
+            }
+        }
+    </script>
+    <!-- Google Fonts & Font Awesome Icons -->
+    <link href="https://fonts.googleapis.com/css2?family=Fira+Code:wght@400;500;600&family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    
+    <!-- Dynamic Web App Manifest Injection via Blob -->
+    <script>
+        const manifestData = {
+            "name": "NetAcademy Pro",
+            "short_name": "NetAcademy",
+            "start_url": ".",
+            "display": "standalone",
+            "background_color": "#020617",
+            "theme_color": "#0f172a",
+            "icons": [{
+                "src": "data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><rect width='100' height='100' rx='20' fill='%2306b6d4'/><text x='50' y='65' font-size='50' text-anchor='middle' fill='white'>NET</text></svg>",
+                "sizes": "192x192 512x512",
+                "type": "image/svg+xml"
+            }]
+        };
+        const manifestBlob = new Blob([JSON.stringify(manifestData)], {type: 'application/json'});
+        const manifestURL = URL.createObjectURL(manifestBlob);
+        const link = document.createElement('link');
+        link.rel = 'manifest';
+        link.href = manifestURL;
+        document.head.appendChild(link);
+    </script>
+    <style>
+        body { font-family: 'Inter', sans-serif; background-color: #020617; color: #f8fafc; }
+        .font-mono { font-family: 'Fira Code', monospace; }
+        ::-webkit-scrollbar { width: 8px; height: 8px; }
+        ::-webkit-scrollbar-track { background: #0f172a; }
+        ::-webkit-scrollbar-thumb { background: #1e293b; border-radius: 4px; }
+        ::-webkit-scrollbar-thumb:hover { background: #06b6d4; }
+        .glass-card { background: rgba(15, 23, 42, 0.8); backdrop-filter: blur(12px); border: 1px solid rgba(255, 255, 255, 0.08); }
+        .glass-card-hover:hover { border-color: rgba(6, 182, 212, 0.4); box-shadow: 0 0 20px rgba(6, 182, 212, 0.15); }
+        .glow-cyan { box-shadow: 0 0 15px rgba(6, 182, 212, 0.3); }
+        .glow-emerald { box-shadow: 0 0 15px rgba(16, 185, 129, 0.3); }
+        .glow-violet { box-shadow: 0 0 15px rgba(139, 92, 246, 0.3); }
+        @keyframes pulsePacket { 0% { offset-distance: 0%; } 100% { offset-distance: 100%; } }
+    </style>
+</head>
+<body class="min-h-screen flex flex-col md:flex-row overflow-x-hidden text-slate-200">
+
+    <!-- Mobile Header -->
+    <div class="md:hidden flex items-center justify-between p-4 bg-slate-900 border-b border-slate-800 sticky top-0 z-50">
+        <div class="flex items-center space-x-2">
+            <i class="fa-solid fa-network-wired text-cyan-400 text-xl"></i>
+            <span class="font-bold text-lg text-white tracking-wide">NetAcademy<span class="text-cyan-400">Pro</span></span>
+        </div>
+        <div class="flex items-center space-x-2">
+            <button id="pwaInstallBtnMobile" class="hidden px-2.5 py-1 bg-cyan-500 text-slate-950 font-bold text-xs rounded-lg flex items-center space-x-1">
+                <i class="fa-solid fa-download"></i><span>Yükle</span>
+            </button>
+            <button id="mobileMenuBtn" class="text-slate-300 hover:text-white focus:outline-none p-1">
+                <i class="fa-solid fa-bars text-2xl"></i>
+            </button>
+        </div>
+    </div>
+
+    <!-- Sidebar Navigation -->
+    <aside id="sidebar" class="fixed inset-y-0 left-0 z-40 w-64 bg-slate-900 border-r border-slate-800 transform -translate-x-full md:translate-x-0 transition-transform duration-300 ease-in-out flex flex-col justify-between">
+        <div>
+            <!-- Logo Section -->
+            <div class="p-5 border-b border-slate-800/80 flex items-center justify-between">
+                <div class="flex items-center space-x-3">
+                    <div class="w-10 h-10 rounded-xl bg-gradient-to-tr from-cyan-500 to-emerald-400 flex items-center justify-center text-slate-950 font-black text-xl shadow-lg shadow-cyan-500/20">
+                        <i class="fa-solid fa-diagram-project"></i>
+                    </div>
+                    <div>
+                        <h1 class="font-bold text-white tracking-wider text-base">NetAcademy<span class="text-cyan-400">Pro</span></h1>
+                        <p class="text-[11px] text-slate-400">Ağ Mühendisliği Platformu</p>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Install PWA Desktop Banner -->
+            <div id="pwaInstallContainer" class="p-3 m-3 bg-gradient-to-r from-cyan-950 to-slate-900 border border-cyan-500/30 rounded-xl hidden">
+                <div class="flex items-center space-x-2 mb-2">
+                    <i class="fa-solid fa-mobile-screen-button text-cyan-400"></i>
+                    <span class="text-xs font-bold text-white">Uygulama Olarak Yükle</span>
+                </div>
+                <p class="text-[11px] text-slate-400 mb-2">Çevrimdışı ve tam ekran masaüstü/mobil deneyimi elde edin.</p>
+                <button id="pwaInstallBtn" class="w-full py-1.5 bg-cyan-500 hover:bg-cyan-400 text-slate-950 font-bold rounded-lg text-xs transition-all flex items-center justify-center space-x-1.5 shadow-md">
+                    <i class="fa-solid fa-download"></i>
+                    <span>Cihaza Yükle</span>
+                </button>
+            </div>
+
+            <!-- Global Search Box -->
+            <div class="px-3 py-2">
+                <div class="relative">
+                    <i class="fa-solid fa-magnifying-glass absolute left-3 top-3 text-slate-500 text-xs"></i>
+                    <input type="text" id="globalSearch" placeholder="Modül veya terim ara..." class="w-full bg-slate-950 text-xs text-slate-200 pl-8 pr-3 py-2 rounded-lg border border-slate-800 focus:outline-none focus:border-cyan-500 transition-colors">
+                </div>
+            </div>
+
+            <!-- Navigation Links -->
+            <nav class="px-3 py-2 space-y-1">
+                <button onclick="switchTab('osi-model')" class="nav-btn active-nav w-full flex items-center space-x-3 px-3 py-2.5 rounded-lg text-xs font-medium transition-all text-slate-300 hover:bg-slate-800 hover:text-cyan-400" data-tab="osi-model">
+                    <i class="fa-solid fa-layer-group w-5 text-center text-cyan-400"></i>
+                    <span>OSI ve TCP/IP Katmanları</span>
+                </button>
+                <button onclick="switchTab('subnetting')" class="nav-btn w-full flex items-center space-x-3 px-3 py-2.5 rounded-lg text-xs font-medium transition-all text-slate-300 hover:bg-slate-800 hover:text-cyan-400" data-tab="subnetting">
+                    <i class="fa-solid fa-calculator w-5 text-center text-emerald-400"></i>
+                    <span>Subnet & VLSM Hesaplayıcı</span>
+                </button>
+                <button onclick="switchTab('devices-topologies')" class="nav-btn w-full flex items-center space-x-3 px-3 py-2.5 rounded-lg text-xs font-medium transition-all text-slate-300 hover:bg-slate-800 hover:text-cyan-400" data-tab="devices-topologies">
+                    <i class="fa-solid fa-server w-5 text-center text-purple-400"></i>
+                    <span>Topoloji Simülatörü & Donanım</span>
+                </button>
+                <button onclick="switchTab('protocols-ports')" class="nav-btn w-full flex items-center space-x-3 px-3 py-2.5 rounded-lg text-xs font-medium transition-all text-slate-300 hover:bg-slate-800 hover:text-cyan-400" data-tab="protocols-ports">
+                    <i class="fa-solid fa-ethernet w-5 text-center text-amber-400"></i>
+                    <span>Protokol & Port İndeksi</span>
+                </button>
+                <button onclick="switchTab('cli-simulator')" class="nav-btn w-full flex items-center space-x-3 px-3 py-2.5 rounded-lg text-xs font-medium transition-all text-slate-300 hover:bg-slate-800 hover:text-cyan-400" data-tab="cli-simulator">
+                    <i class="fa-solid fa-terminal w-5 text-center text-rose-400"></i>
+                    <span>Terminal / Komut Satırı</span>
+                </button>
+                <button onclick="switchTab('quiz-section')" class="nav-btn w-full flex items-center space-x-3 px-3 py-2.5 rounded-lg text-xs font-medium transition-all text-slate-300 hover:bg-slate-800 hover:text-cyan-400" data-tab="quiz-section">
+                    <i class="fa-solid fa-graduation-cap w-5 text-center text-violet-400"></i>
+                    <span>Ağ Sınavı & CCNA Hazırlık</span>
+                </button>
+                <button onclick="switchTab('practical-tips')" class="nav-btn w-full flex items-center space-x-3 px-3 py-2.5 rounded-lg text-xs font-medium transition-all text-slate-300 hover:bg-slate-800 hover:text-cyan-400" data-tab="practical-tips">
+                    <i class="fa-solid fa-lightbulb w-5 text-center text-yellow-400"></i>
+                    <span>Saha İpuçları & Rehber</span>
+                </button>
+            </nav>
+        </div>
+
+        <!-- Footer / Version -->
+        <div class="p-4 border-t border-slate-800 text-[11px] text-slate-500 flex justify-between items-center">
+            <span>Offline Ready v3.0</span>
+            <span class="inline-flex items-center px-2 py-0.5 rounded text-[10px] font-medium bg-emerald-500/10 text-emerald-400 border border-emerald-500/20">
+                <i class="fa-solid fa-wifi-slash mr-1"></i>Çevrimdışı Mod
+            </span>
+        </div>
+    </aside>
+
+    <!-- Main Content Area -->
+    <main class="flex-1 md:ml-64 p-4 md:p-8 overflow-y-auto">
+
+        <!-- SECTION 1: OSI VE TCP/IP KATMANLARI -->
+        <section id="osi-model" class="tab-content space-y-8">
+            <div class="border-b border-slate-800 pb-5">
+                <div class="flex items-center space-x-3 mb-2">
+                    <span class="p-2 rounded-lg bg-cyan-500/10 text-cyan-400 border border-cyan-500/20">
+                        <i class="fa-solid fa-layer-group text-xl"></i>
+                    </span>
+                    <h2 class="text-2xl md:text-3xl font-bold text-white">OSI ve TCP/IP Katman Mimarisi</h2>
+                </div>
+                <p class="text-slate-400 text-sm">
+                    Ağ iletişiminin 7 katmanlı OSI ve 4 katmanlı TCP/IP mimarisi, veri kapsülleme (Encapsulation) ve paket çözümleme (Decapsulation) süreçleri.
+                </p>
+            </div>
+
+            <!-- Kapsülleme & Çözümleme İnteraktif Simülatörü -->
+            <div class="glass-card rounded-2xl p-5 md:p-6 border border-slate-800">
+                <div class="flex flex-col sm:flex-row justify-between items-start sm:items-center mb-4 gap-2">
+                    <h3 class="text-lg font-semibold text-white flex items-center space-x-2">
+                        <i class="fa-solid fa-box-open text-cyan-400"></i>
+                        <span>İki Yönlü Kapsülleme / Çözümleme Görselleştirici</span>
+                    </h3>
+                    <div class="flex space-x-2 bg-slate-950 p-1 rounded-lg border border-slate-800 text-xs font-mono">
+                        <button onclick="setEncapsulationMode('enc')" id="modeEncBtn" class="px-3 py-1 rounded-md bg-cyan-500 text-slate-950 font-bold transition-all">Encapsulation (Gönderim)</button>
+                        <button onclick="setEncapsulationMode('dec')" id="modeDecBtn" class="px-3 py-1 rounded-md text-slate-400 transition-all">Decapsulation (Alım)</button>
+                    </div>
+                </div>
+
+                <!-- Stepper Buttons -->
+                <div class="grid grid-cols-2 lg:grid-cols-5 gap-2 text-center mb-6" id="encStepButtons">
+                    <!-- Populated by JS -->
+                </div>
+
+                <!-- Visually Animated Data Unit -->
+                <div class="bg-slate-950 p-6 rounded-xl border border-slate-800 flex flex-col items-center justify-center min-h-[160px]">
+                    <div id="encapsulationVisual" class="flex items-center space-x-1.5 flex-wrap justify-center gap-y-2 transition-all duration-300">
+                        <div class="bg-emerald-500/20 border border-emerald-500/50 text-emerald-300 px-4 py-3 rounded-lg text-xs md:text-sm font-mono font-semibold">
+                            [ Ham Veri: "HTTPS GET /index.html" ]
+                        </div>
+                    </div>
+                    <div id="encapsulationDesc" class="mt-4 text-xs md:text-sm text-cyan-300 text-center font-mono bg-cyan-950/20 px-4 py-2 rounded-lg border border-cyan-500/20">
+                        Uygulama katmanında oluşturulan veri.
+                    </div>
+                </div>
+            </div>
+
+            <!-- OSI Matrix & Dynamic Layers -->
+            <div class="grid grid-cols-1 lg:grid-cols-2 gap-6">
+                <!-- OSI Katmanları -->
+                <div class="glass-card rounded-2xl p-5 border border-slate-800">
+                    <h3 class="text-lg font-bold text-white mb-4 flex items-center justify-between">
+                        <span><i class="fa-solid fa-list-ol text-cyan-400 mr-2"></i>OSI 7 Katmanlı Model</span>
+                        <span class="text-xs font-normal text-slate-400">Detaylar için katmana tıklayın</span>
+                    </h3>
+                    <div class="space-y-2" id="osiLayersContainer"></div>
+                </div>
+
+                <!-- TCP/IP Katmanları & Detay Paneli -->
+                <div class="space-y-6">
+                    <div class="glass-card rounded-2xl p-5 border border-slate-800">
+                        <h3 class="text-lg font-bold text-white mb-4 flex items-center justify-between">
+                            <span><i class="fa-solid fa-network-wired text-emerald-400 mr-2"></i>TCP/IP 4 Katman Modeli</span>
+                            <span class="text-xs font-normal text-slate-400">Pratik Standart</span>
+                        </h3>
+                        <div class="space-y-2" id="tcpLayersContainer"></div>
+                    </div>
+
+                    <!-- Selected Layer Details Card -->
+                    <div id="layerDetailCard" class="glass-card rounded-2xl p-5 border border-cyan-500/30 bg-cyan-950/10">
+                        <div class="flex items-center justify-between mb-3">
+                            <span id="detailLayerBadge" class="px-2.5 py-1 rounded-md text-xs font-bold bg-cyan-500/20 text-cyan-400 border border-cyan-500/30">Katman 7</span>
+                            <span id="detailPduBadge" class="text-xs text-slate-400 font-mono">PDU: Data</span>
+                        </div>
+                        <h4 id="detailTitle" class="text-xl font-bold text-white mb-2">Uygulama Katmanı (Application)</h4>
+                        <p id="detailDesc" class="text-xs md:text-sm text-slate-300 mb-4 leading-relaxed">
+                            Kullanıcının ağ ile etkileşime geçtiği arayüz katmanıdır.
+                        </p>
+                        <div>
+                            <span class="text-xs text-slate-400 font-semibold block mb-2">İlişkili Donanım ve Protokoller:</span>
+                            <div id="detailProtocols" class="flex flex-wrap gap-1.5"></div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- SECTION 2: SUBNETTING & VLSM CALCULATOR -->
+        <section id="subnetting" class="tab-content space-y-8 hidden">
+            <div class="border-b border-slate-800 pb-5">
+                <div class="flex items-center space-x-3 mb-2">
+                    <span class="p-2 rounded-lg bg-emerald-500/10 text-emerald-400 border border-emerald-500/20">
+                        <i class="fa-solid fa-calculator text-xl"></i>
+                    </span>
+                    <h2 class="text-2xl md:text-3xl font-bold text-white">IP Adresleme, Subnetting & Binary Görselleştirici</h2>
+                </div>
+                <p class="text-slate-400 text-sm">
+                    IPv4/IPv6 hesaplamaları, CIDR notasyonu, alt ağ maskeleri ve ikili (binary) bit seviyesinde inceleme.
+                </p>
+            </div>
+
+            <!-- Subnet Calculator Tool -->
+            <div class="glass-card rounded-2xl p-5 md:p-6 border border-emerald-500/30 glow-emerald">
+                <h3 class="text-lg font-bold text-white mb-4 flex items-center space-x-2">
+                    <i class="fa-solid fa-sliders text-emerald-400"></i>
+                    <span>Canlı IPv4 Alt Ağ Hesaplayıcı</span>
+                </h3>
+
+                <div class="grid grid-cols-1 md:grid-cols-3 gap-4 mb-6">
+                    <div class="md:col-span-2">
+                        <label class="block text-xs text-slate-400 font-semibold mb-2">IP Adresi</label>
+                        <input type="text" id="calcIp" value="192.168.1.100" class="w-full bg-slate-950 text-white font-mono px-4 py-3 rounded-xl border border-slate-800 focus:outline-none focus:border-emerald-500">
+                    </div>
+                    <div>
+                        <label class="block text-xs text-slate-400 font-semibold mb-2">CIDR Maskesi</label>
+                        <select id="calcCidr" class="w-full bg-slate-950 text-white font-mono px-4 py-3 rounded-xl border border-slate-800 focus:outline-none focus:border-emerald-500"></select>
+                    </div>
+                </div>
+
+                <!-- Output Cards -->
+                <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 mb-6" id="subnetResults">
+                    <div class="bg-slate-950 p-4 rounded-xl border border-slate-800">
+                        <span class="text-xs text-slate-500 block mb-1">Subnet Mask</span>
+                        <span id="resSubnetMask" class="text-sm font-bold font-mono text-emerald-400">255.255.255.0</span>
+                    </div>
+                    <div class="bg-slate-950 p-4 rounded-xl border border-slate-800">
+                        <span class="text-xs text-slate-500 block mb-1">Ağ Adresi (Network ID)</span>
+                        <span id="resNetworkAddr" class="text-sm font-bold font-mono text-cyan-400">192.168.1.0</span>
+                    </div>
+                    <div class="bg-slate-950 p-4 rounded-xl border border-slate-800">
+                        <span class="text-xs text-slate-500 block mb-1">Yayın Adresi (Broadcast)</span>
+                        <span id="resBroadcastAddr" class="text-sm font-bold font-mono text-rose-400">192.168.1.255</span>
+                    </div>
+                    <div class="bg-slate-950 p-4 rounded-xl border border-slate-800">
+                        <span class="text-xs text-slate-500 block mb-1">Wildcard Mask</span>
+                        <span id="resWildcardMask" class="text-sm font-bold font-mono text-purple-400">0.0.0.255</span>
+                    </div>
+                    <div class="bg-slate-950 p-4 rounded-xl border border-slate-800">
+                        <span class="text-xs text-slate-500 block mb-1">Kullanılabilir IP Aralığı</span>
+                        <span id="resUsableRange" class="text-xs font-bold font-mono text-slate-200">192.168.1.1 - 192.168.1.254</span>
+                    </div>
+                    <div class="bg-slate-950 p-4 rounded-xl border border-slate-800">
+                        <span class="text-xs text-slate-500 block mb-1">Kullanılabilir Host Sayısı</span>
+                        <span id="resUsableHosts" class="text-sm font-bold font-mono text-amber-400">254</span>
+                    </div>
+                    <div class="bg-slate-950 p-4 rounded-xl border border-slate-800">
+                        <span class="text-xs text-slate-500 block mb-1">IP Sınıfı</span>
+                        <span id="resIpClass" class="text-sm font-bold font-mono text-violet-400">Sınıf C (Private)</span>
+                    </div>
+                    <div class="bg-slate-950 p-4 rounded-xl border border-slate-800">
+                        <span class="text-xs text-slate-500 block mb-1">Toplam Bit Sayısı</span>
+                        <span id="resTotalBits" class="text-sm font-bold font-mono text-blue-400">32 Bit (IPv4)</span>
+                    </div>
+                </div>
+
+                <!-- Binary Bit Visualization -->
+                <div class="bg-slate-950 p-4 rounded-xl border border-slate-800">
+                    <h4 class="text-xs font-bold text-slate-400 mb-3 uppercase tracking-wider">İkili (Binary) Bit Seviyesinde Görselleştirme</h4>
+                    <div class="space-y-2 font-mono text-xs">
+                        <div class="flex items-center space-x-2">
+                            <span class="w-24 text-slate-500">IP (Binary):</span>
+                            <div id="binaryIp" class="flex-1 text-cyan-300 break-all"></div>
+                        </div>
+                        <div class="flex items-center space-x-2">
+                            <span class="w-24 text-slate-500">Mask (Binary):</span>
+                            <div id="binaryMask" class="flex-1 text-emerald-400 break-all"></div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- SECTION 3: TOPOLOGIES & HARDWARE PLAYGROUND -->
+        <section id="devices-topologies" class="tab-content space-y-8 hidden">
+            <div class="border-b border-slate-800 pb-5">
+                <div class="flex items-center space-x-3 mb-2">
+                    <span class="p-2 rounded-lg bg-purple-500/10 text-purple-400 border border-purple-500/20">
+                        <i class="fa-solid fa-server text-xl"></i>
+                    </span>
+                    <h2 class="text-2xl md:text-3xl font-bold text-white">Ağ Topolojileri & Donanım Playground</h2>
+                </div>
+                <p class="text-slate-400 text-sm">
+                    Ağ topolojileri simülasyonu, canlı paket akışı ve kritik ağ cihazlarının çalışma mantığı.
+                </p>
+            </div>
+
+            <!-- Topoloji Görselleştirici & Canlı Paket Animasyonu -->
+            <div class="glass-card rounded-2xl p-5 md:p-6 border border-slate-800">
+                <div class="flex flex-col md:flex-row justify-between items-start md:items-center mb-4 gap-3">
+                    <h3 class="text-lg font-bold text-white flex items-center space-x-2">
+                        <i class="fa-solid fa-diagram-next text-purple-400"></i>
+                        <span>İnteraktif Topoloji & Paket Akış Simülasyonu</span>
+                    </h3>
+                    <div class="flex flex-wrap gap-2" id="topologyBtns">
+                        <button onclick="renderTopology('star')" class="px-3 py-1.5 rounded-lg text-xs font-semibold bg-purple-500 text-white transition-all">Yıldız (Star)</button>
+                        <button onclick="renderTopology('mesh')" class="px-3 py-1.5 rounded-lg text-xs font-semibold bg-slate-800 text-slate-300 hover:bg-slate-700 transition-all">Mesh (Ağbağ)</button>
+                        <button onclick="renderTopology('bus')" class="px-3 py-1.5 rounded-lg text-xs font-semibold bg-slate-800 text-slate-300 hover:bg-slate-700 transition-all">Veriyolu (Bus)</button>
+                        <button onclick="renderTopology('ring')" class="px-3 py-1.5 rounded-lg text-xs font-semibold bg-slate-800 text-slate-300 hover:bg-slate-700 transition-all">Halka (Ring)</button>
+                    </div>
+                </div>
+
+                <div class="grid grid-cols-1 lg:grid-cols-3 gap-6 items-center">
+                    <div id="topologyCanvasContainer" class="lg:col-span-2 bg-slate-950 p-6 rounded-xl border border-slate-800 min-h-[300px] flex items-center justify-center relative overflow-hidden">
+                        <!-- Canvas / SVG Rendered by JS -->
+                    </div>
+                    <div id="topologyInfo" class="space-y-3">
+                        <!-- JS Dynamic Info -->
+                    </div>
+                </div>
+            </div>
+
+            <!-- Ağ Donanımları Kataloğu -->
+            <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-5">
+                <div class="glass-card glass-card-hover rounded-xl p-5 border border-slate-800 transition-all">
+                    <div class="w-10 h-10 rounded-lg bg-cyan-500/10 text-cyan-400 flex items-center justify-center mb-3">
+                        <i class="fa-solid fa-network-wired text-lg"></i>
+                    </div>
+                    <span class="text-[10px] font-bold text-cyan-400 uppercase tracking-wider">Layer 2 / Layer 3</span>
+                    <h4 class="text-lg font-bold text-white mb-2">Switch (Anahtar)</h4>
+                    <p class="text-xs text-slate-400 leading-relaxed mb-3">
+                        MAC adres tablosu (CAM) kullanarak gelen çerçeveyi yalnızca hedef cihazın bağlı olduğu porta yönlendirir. collision domain'leri böler.
+                    </p>
+                    <div class="text-[11px] text-slate-500 border-t border-slate-800/80 pt-2 font-mono">Özellik: VLAN, Spanning Tree (STP)</div>
+                </div>
+
+                <div class="glass-card glass-card-hover rounded-xl p-5 border border-slate-800 transition-all">
+                    <div class="w-10 h-10 rounded-lg bg-emerald-500/10 text-emerald-400 flex items-center justify-center mb-3">
+                        <i class="fa-solid fa-route text-lg"></i>
+                    </div>
+                    <span class="text-[10px] font-bold text-emerald-400 uppercase tracking-wider">Layer 3 (Network)</span>
+                    <h4 class="text-lg font-bold text-white mb-2">Router (Yönlendirici)</h4>
+                    <p class="text-xs text-slate-400 leading-relaxed mb-3">
+                        Farklı IP bloklarındaki ağları birbirine bağlar. Yönlendirme tablosu (Routing Table) ve OSPF/BGP protokolleri ile paket iletir. Broadcast domain'i böler.
+                    </p>
+                    <div class="text-[11px] text-slate-500 border-t border-slate-800/80 pt-2 font-mono">Özellik: NAT, WAN Bağlantısı</div>
+                </div>
+
+                <div class="glass-card glass-card-hover rounded-xl p-5 border border-slate-800 transition-all">
+                    <div class="w-10 h-10 rounded-lg bg-rose-500/10 text-rose-400 flex items-center justify-center mb-3">
+                        <i class="fa-solid fa-shield-halved text-lg"></i>
+                    </div>
+                    <span class="text-[10px] font-bold text-rose-400 uppercase tracking-wider">Layer 3 - Layer 7</span>
+                    <h4 class="text-lg font-bold text-white mb-2">Firewall (Güvenlik Duvarı)</h4>
+                    <p class="text-xs text-slate-400 leading-relaxed mb-3">
+                        Ağ trafiğini kural kümesine (ACL) göre filtreler. Stateful Inspection ile bağlantı durumlarını takip eder. NGFW cihazları DPI ve Antivirus da içerir.
+                    </p>
+                    <div class="text-[11px] text-slate-500 border-t border-slate-800/80 pt-2 font-mono">Özellik: IPS/IDS, VPN, SSL Inspection</div>
+                </div>
+            </div>
+        </section>
+
+        <!-- SECTION 4: PROTOKOL VE PORT İNDEKSİ -->
+        <section id="protocols-ports" class="tab-content space-y-8 hidden">
+            <div class="border-b border-slate-800 pb-5">
+                <div class="flex items-center space-x-3 mb-2">
+                    <span class="p-2 rounded-lg bg-amber-500/10 text-amber-400 border border-amber-500/20">
+                        <i class="fa-solid fa-ethernet text-xl"></i>
+                    </span>
+                    <h2 class="text-2xl md:text-3xl font-bold text-white">Ağ Protokolleri ve Port Rehberi</h2>
+                </div>
+                <p class="text-slate-400 text-sm">
+                    Katmanlarına ve kullanım alanlarına göre 30+ kritik ağ protokolü ve varsayılan port numaraları.
+                </p>
+            </div>
+
+            <!-- Search & Filters -->
+            <div class="glass-card rounded-2xl p-4 border border-slate-800 flex flex-col md:flex-row gap-4 justify-between items-center">
+                <div class="relative w-full md:w-80">
+                    <i class="fa-solid fa-search absolute left-3 top-3 text-slate-500 text-xs"></i>
+                    <input type="text" id="portSearch" placeholder="Port, Protokol veya Servis ara..." class="w-full bg-slate-950 text-xs text-slate-200 pl-8 pr-3 py-2.5 rounded-lg border border-slate-800 focus:outline-none focus:border-amber-500">
+                </div>
+                <div class="flex flex-wrap gap-1.5 w-full md:w-auto" id="portFilterBtns">
+                    <button onclick="filterPorts('ALL')" class="port-filter active-filter text-xs px-3 py-1.5 rounded-lg bg-amber-500 text-slate-950 font-bold transition-all">Hepsi</button>
+                    <button onclick="filterPorts('TCP')" class="port-filter text-xs px-3 py-1.5 rounded-lg bg-slate-900 text-slate-300 hover:bg-slate-800 transition-all">TCP</button>
+                    <button onclick="filterPorts('UDP')" class="port-filter text-xs px-3 py-1.5 rounded-lg bg-slate-900 text-slate-300 hover:bg-slate-800 transition-all">UDP</button>
+                    <button onclick="filterPorts('WEB')" class="port-filter text-xs px-3 py-1.5 rounded-lg bg-slate-900 text-slate-300 hover:bg-slate-800 transition-all">Web & E-Posta</button>
+                    <button onclick="filterPorts('MANAGEMENT')" class="port-filter text-xs px-3 py-1.5 rounded-lg bg-slate-900 text-slate-300 hover:bg-slate-800 transition-all">Yönetim & Güvenlik</button>
+                </div>
+            </div>
+
+            <!-- Port Matrix Table -->
+            <div class="glass-card rounded-2xl border border-slate-800 overflow-hidden">
+                <div class="overflow-x-auto">
+                    <table class="w-full text-left text-xs md:text-sm">
+                        <thead class="bg-slate-950 text-slate-400 font-mono text-[11px] uppercase border-b border-slate-800">
+                            <tr>
+                                <th class="p-3.5">Port</th>
+                                <th class="p-3.5">Protokol Adı</th>
+                                <th class="p-3.5">İletim Tipi</th>
+                                <th class="p-3.5">Açıklama ve Kullanım Amacı</th>
+                                <th class="p-3.5">Güvenlik Değerlendirmesi</th>
+                            </tr>
+                        </thead>
+                        <tbody id="portsTableBody" class="divide-y divide-slate-800/60 font-sans"></tbody>
+                    </table>
+                </div>
+            </div>
+        </section>
+
+        <!-- SECTION 5: CLI TERMINAL SIMULATOR -->
+        <section id="cli-simulator" class="tab-content space-y-8 hidden">
+            <div class="border-b border-slate-800 pb-5">
+                <div class="flex items-center space-x-3 mb-2">
+                    <span class="p-2 rounded-lg bg-rose-500/10 text-rose-400 border border-rose-500/20">
+                        <i class="fa-solid fa-terminal text-xl"></i>
+                    </span>
+                    <h2 class="text-2xl md:text-3xl font-bold text-white">İnteraktif CLI Komut Satırı</h2>
+                </div>
+                <p class="text-slate-400 text-sm">
+                    Gerçek zamanlı ağ teşhis araçları simülasyonu.
+                </p>
+            </div>
+
+            <!-- Terminal Window -->
+            <div class="glass-card rounded-2xl border border-slate-800 overflow-hidden shadow-2xl">
+                <div class="bg-slate-950 px-4 py-3 border-b border-slate-800 flex items-center justify-between">
+                    <div class="flex items-center space-x-2">
+                        <span class="w-3 h-3 rounded-full bg-rose-500 inline-block"></span>
+                        <span class="w-3 h-3 rounded-full bg-yellow-500 inline-block"></span>
+                        <span class="w-3 h-3 rounded-full bg-emerald-500 inline-block"></span>
+                        <span class="ml-2 text-xs font-mono text-slate-400">NetAcademy Terminal v3.0</span>
+                    </div>
+                    <button onclick="clearTerminal()" class="text-xs text-slate-500 hover:text-slate-300 font-mono">
+                        <i class="fa-solid fa-trash-can mr-1"></i>Temizle
+                    </button>
+                </div>
+
+                <!-- Fast Command Preset Buttons -->
+                <div class="p-3 bg-slate-900/80 border-b border-slate-800 flex flex-wrap gap-2">
+                    <button onclick="runCliCommand('ping 8.8.8.8')" class="px-2.5 py-1 rounded bg-slate-800 hover:bg-slate-700 text-xs font-mono text-cyan-300">ping 8.8.8.8</button>
+                    <button onclick="runCliCommand('tracert google.com')" class="px-2.5 py-1 rounded bg-slate-800 hover:bg-slate-700 text-xs font-mono text-emerald-300">tracert google.com</button>
+                    <button onclick="runCliCommand('ipconfig /all')" class="px-2.5 py-1 rounded bg-slate-800 hover:bg-slate-700 text-xs font-mono text-purple-300">ipconfig /all</button>
+                    <button onclick="runCliCommand('nslookup example.com')" class="px-2.5 py-1 rounded bg-slate-800 hover:bg-slate-700 text-xs font-mono text-amber-300">nslookup example.com</button>
+                    <button onclick="runCliCommand('netstat -an')" class="px-2.5 py-1 rounded bg-slate-800 hover:bg-slate-700 text-xs font-mono text-rose-300">netstat -an</button>
+                    <button onclick="runCliCommand('arp -a')" class="px-2.5 py-1 rounded bg-slate-800 hover:bg-slate-700 text-xs font-mono text-blue-300">arp -a</button>
+                    <button onclick="runCliCommand('help')" class="px-2.5 py-1 rounded bg-slate-800 hover:bg-slate-700 text-xs font-mono text-slate-300">help</button>
+                </div>
+
+                <!-- Output Area -->
+                <div id="terminalOutput" class="bg-slate-950 p-4 font-mono text-xs md:text-sm h-80 overflow-y-auto space-y-2 text-slate-300">
+                    <p class="text-slate-500">// Terminal Simülatörüne Hoş Geldiniz.</p>
+                    <p class="text-slate-500">// Yukarıdaki hazır komut butonlarını kullanabilir veya klavyeden komut yazabilirsiniz.</p>
+                </div>
+
+                <!-- Input Field -->
+                <div class="bg-slate-950 p-3 border-t border-slate-800 flex items-center space-x-2">
+                    <span class="text-emerald-400 font-mono text-sm font-bold">C:\Users\Admin&gt;</span>
+                    <input type="text" id="terminalInput" placeholder="komut girin (örn: ping 192.168.1.1)..." class="flex-1 bg-transparent border-none text-white font-mono text-sm focus:outline-none">
+                    <button onclick="handleTerminalSubmit()" class="px-4 py-1.5 bg-emerald-500 text-slate-950 rounded-lg text-xs font-bold hover:bg-emerald-400 transition-all">Gönder</button>
+                </div>
+            </div>
+        </section>
+
+        <!-- SECTION 6: AĞ SINAVI & CCNA HAZIRLIK -->
+        <section id="quiz-section" class="tab-content space-y-8 hidden">
+            <div class="border-b border-slate-800 pb-5">
+                <div class="flex items-center space-x-3 mb-2">
+                    <span class="p-2 rounded-lg bg-violet-500/10 text-violet-400 border border-violet-500/20">
+                        <i class="fa-solid fa-graduation-cap text-xl"></i>
+                    </span>
+                    <h2 class="text-2xl md:text-3xl font-bold text-white">Ağ Sınavı & CCNA / Network+ Hazırlık</h2>
+                </div>
+                <p class="text-slate-400 text-sm">
+                    Bilgilerinizi ölçün! İnteraktif çoktan seçmeli sorular, anında doğrulama ve detaylı açıklamalar.
+                </p>
+            </div>
+
+            <div class="glass-card rounded-2xl p-6 border border-violet-500/30 glow-violet max-w-3xl mx-auto">
+                <div class="flex justify-between items-center mb-6 border-b border-slate-800 pb-4">
+                    <span id="quizProgress" class="text-xs font-bold text-violet-400 uppercase tracking-wider font-mono">Soru 1 / 5</span>
+                    <span id="quizScore" class="text-xs font-bold text-emerald-400 bg-emerald-950/40 px-3 py-1 rounded-full border border-emerald-800/30">Puan: 0</span>
+                </div>
+
+                <div id="quizContainer">
+                    <!-- Dynamic Question Display -->
+                </div>
+            </div>
+        </section>
+
+        <!-- SECTION 7: SAHA İPUÇLARI -->
+        <section id="practical-tips" class="tab-content space-y-8 hidden">
+            <div class="border-b border-slate-800 pb-5">
+                <div class="flex items-center space-x-3 mb-2">
+                    <span class="p-2 rounded-lg bg-yellow-500/10 text-yellow-400 border border-yellow-500/20">
+                        <i class="fa-solid fa-lightbulb text-xl"></i>
+                    </span>
+                    <h2 class="text-2xl md:text-3xl font-bold text-white">Saha İpuçları ve Sorun Giderme Rehberi</h2>
+                </div>
+                <p class="text-slate-400 text-sm">
+                    Ağ mühendisliğinde sık karşılaşılan problemler ve çözüm yöntemleri.
+                </p>
+            </div>
+
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                <div class="glass-card rounded-2xl p-6 border border-slate-800 space-y-3">
+                    <h3 class="text-base text-white font-bold flex items-center space-x-2 text-cyan-400">
+                        <i class="fa-solid fa-sitemap"></i><span>VLAN ve Trunking Konfigürasyonu</span>
+                    </h3>
+                    <p class="text-xs text-slate-300 leading-relaxed">
+                        Farklı departmanların trafiğini izole etmek için Switch portları ilgili VLAN'lere (örn: VLAN 10 - İK, VLAN 20 - Yazılım) atanır. Switch'ler arası bağlantı için port <strong>Trunk Mode (802.1Q)</strong> olarak ayarlanarak tüm VLAN etiketleri taşınır.
+                    </p>
+                </div>
+
+                <div class="glass-card rounded-2xl p-6 border border-slate-800 space-y-3">
+                    <h3 class="text-base text-white font-bold flex items-center space-x-2 text-emerald-400">
+                        <i class="fa-solid fa-network-wired"></i><span>Ağ Loop'ları ve Spanning Tree (STP)</span>
+                    </h3>
+                    <p class="text-xs text-slate-300 leading-relaxed">
+                        Switch'ler arasında yedekli kablo çekildiğinde Broadcast Storm oluşur ve ağ kilitlenir. <strong>IEEE 802.1D Spanning Tree Protocol (STP)</strong> döngüsel yolları tespit eder ve yedekli portu mantıksal olarak kapatır.
+                    </p>
+                </div>
+            </div>
+        </section>
+
+    </main>
+
+    <!-- App Logic Scripts -->
+    <script>
+        // --- DATA STRUCTURES ---
+
+        const osiData = [
+            { layer: 7, name: 'Uygulama (Application)', pdu: 'Data', desc: 'Kullanıcı ve yazılımların ağ ile Doğrudan etkileşime girdiği katman.', protocols: ['HTTP', 'HTTPS', 'DNS', 'FTP', 'SSH', 'DHCP'] },
+            { layer: 6, name: 'Sunum (Presentation)', pdu: 'Data', desc: 'Verinin biçimlendirilmesi, şifrelenmesi (SSL/TLS) ve sıkıştırılması.', protocols: ['TLS/SSL', 'JPEG', 'ASCII', 'MIME'] },
+            { layer: 5, name: 'Oturum (Session)', pdu: 'Data', desc: 'Uygulamalar arasındaki oturumların başlatılması ve yönetilmesi.', protocols: ['NetBIOS', 'RPC', 'PPTP', 'Sockets'] },
+            { layer: 4, name: 'Taşıma (Transport)', pdu: 'Segment / Datagram', desc: 'Uçtan uca veri iletimi. Port numaraları bu katmandadır.', protocols: ['TCP', 'UDP'] },
+            { layer: 3, name: 'Ağ (Network)', pdu: 'Paket (Packet)', desc: 'Mantıksal adresleme (IP) ve hedefe giden en uygun yolun belirlenmesi (Routing).', protocols: ['IPv4', 'IPv6', 'ICMP', 'OSPF', 'BGP'] },
+            { layer: 2, name: 'Veri Bağı (Data Link)', pdu: 'Çerçeve (Frame)', desc: 'Fiziksel adresleme (MAC) ve aynı ağ içerisindeki anahtarlama (Switching).', protocols: ['Ethernet (802.3)', 'Wi-Fi (802.11)', 'ARP', 'VLAN'] },
+            { layer: 1, name: 'Fiziksel (Physical)', pdu: 'Bit', desc: 'Verinin kablo veya radyo dalgaları ile ham 1 ve 0\'lar halinde iletilmesi.', protocols: ['Cat6 Cables', 'Fiber Optic', 'RJ45', 'Signal Modulation'] }
+        ];
+
+        const tcpData = [
+            { name: 'Uygulama (Application)', osiEquiv: 'OSI 7, 6, 5', desc: 'HTTP, DNS, SSH, FTP gibi servisleri kapsar.' },
+            { name: 'Taşıma (Transport)', osiEquiv: 'OSI 4', desc: 'TCP (Bağlantı Odaklı) ve UDP (Bağlantısız) protokolleri.' },
+            { name: 'İnternet (Internet)', osiEquiv: 'OSI 3', desc: 'IP adresleme ve paket yönlendirme.' },
+            { name: 'Ağ Erişimi (Network Access)', osiEquiv: 'OSI 2, 1', desc: 'Fiziksel donanım, MAC adresleri ve kablolama.' }
+        ];
+
+        const portsDatabase = [
+            { port: 20, protocol: 'TCP', type: 'WEB', name: 'FTP Data', desc: 'Dosya transfer veri portu.', sec: 'Güvenliksiz ham veri.' },
+            { port: 21, protocol: 'TCP', type: 'WEB', name: 'FTP Control', desc: 'Dosya transfer komut ve yetkilendirme.', sec: 'SFTP veya FTPS tercih edilmelidir.' },
+            { port: 22, protocol: 'TCP', type: 'MANAGEMENT', name: 'SSH / SFTP', desc: 'Şifrelenmiş güvenli komut satırı ve dosya transferi.', sec: 'Şifre yerine SSH Key kullanılmalı.' },
+            { port: 23, protocol: 'TCP', type: 'MANAGEMENT', name: 'Telnet', desc: 'Şifrelenmemiş metin tabanlı uzaktan yönetim.', sec: 'Riskli! SSH kullanılmalıdır.' },
+            { port: 25, protocol: 'TCP', type: 'WEB', name: 'SMTP', desc: 'E-Posta gönderme protokolü.', sec: 'Port 587 (STARTTLS) önerilir.' },
+            { port: 53, protocol: 'TCP/UDP', type: 'MANAGEMENT', name: 'DNS', desc: 'Alan adlarını IP adreslerine dönüştürür.', sec: 'DNSSEC kullanılmalıdır.' },
+            { port: 67, protocol: 'UDP', type: 'MANAGEMENT', name: 'DHCP Server', desc: 'Otomatik IP adresi dağıtımı.', sec: 'DHCP Snooping ile korunmalı.' },
+            { port: 80, protocol: 'TCP', type: 'WEB', name: 'HTTP', desc: 'Şifrelenmemiş web trafiği.', sec: 'HTTPS (443) önerilir.' },
+            { port: 443, protocol: 'TCP', type: 'WEB', name: 'HTTPS', desc: 'SSL/TLS ile şifrelenmiş güvenli web trafiği.', sec: 'TLS 1.3 kullanılmalı.' },
+            { port: 3389, protocol: 'TCP', type: 'MANAGEMENT', name: 'RDP', desc: 'Windows Uzak Masaüstü Bağlantısı.', sec: 'Doğrudan dışa açılmamalı, VPN arkasında olmalı.' }
+        ];
+
+        const quizQuestions = [
+            {
+                q: "Aşağıdaki OSI katmanlarından hangisi veri iletiminde mantıksal IP adreslerini ve yönlendirme (Routing) kararlarını yönetir?",
+                options: ["Katman 2 - Veri Bağı", "Katman 3 - Ağ Katmanı", "Katman 4 - Taşıma Katmanı", "Katman 5 - Oturum Katmanı"],
+                answer: 1,
+                explanation: "Katman 3 (Network Layer) IP adreslemesini ve kaynak ile hedef arasındaki en uygun rotanın belirlenmesini (Routing) üstlenir."
+            },
+            {
+                q: "192.168.1.0/26 CIDR notasyonuna sahip bir alt ağda kaç adet kullanılabilir host IP adresi bulunur?",
+                options: ["254", "126", "62", "30"],
+                answer: 2,
+                explanation: "/26 maskesinde kalan host bit sayısı 32 - 26 = 6'dır. Toplam IP: 2^6 = 64. Ağ ve Yayın adresleri çıkarılınca 64 - 2 = 62 kullanılabilir host kalır."
+            },
+            {
+                q: "Ağdaki cihazlara otomatik IP adresi, alt ağ maskesi ve varsayılan ağ geçidi (Gateway) atayan protokol hangisidir?",
+                options: ["DNS", "ARP", "DHCP", "ICMP"],
+                answer: 2,
+                explanation: "DHCP (Dynamic Host Configuration Protocol), ağa bağlanan cihazlara otomatik olarak IP konfigürasyonu sağlar."
+            },
+            {
+                q: "Şifrelenmiş ve güvenli uzaktan komut satırı yönetimi için hangi port ve protokol tercih edilir?",
+                options: ["Port 23 - Telnet", "Port 22 - SSH", "Port 80 - HTTP", "Port 445 - SMB"],
+                answer: 1,
+                explanation: "SSH (Secure Shell) 22 numaralı portu kullanır ve tüm trafiği uçtan uca şifreler. Telnet (23) ise metin tabanlı ve güvensizdir."
+            },
+            {
+                q: "Bir Switch'in bilinmeyen hedef MAC adresine sahip bir çerçeveyi tüm aktif portlara göndermesi işlemine ne ad verilir?",
+                options: ["Routing", "Flooding", "Trunking", "Handshake"],
+                answer: 1,
+                explanation: "Switch, CAM tablosunda bulunmayan hedef MAC adresleri için gelen çerçeveyi geldiği port hariç tüm portlara yayınlar (Unicast Flooding)."
+            }
+        ];
+
+        // --- PWA SERVICE WORKER & INSTALL LOGIC ---
+        let deferredPrompt;
+        window.addEventListener('beforeinstallprompt', (e) => {
+            e.preventDefault();
+            deferredPrompt = e;
+            document.getElementById('pwaInstallContainer').classList.remove('hidden');
+            const mobileBtn = document.getElementById('pwaInstallBtnMobile');
+            if (mobileBtn) mobileBtn.classList.remove('hidden');
+        });
+
+        document.getElementById('pwaInstallBtn').addEventListener('click', async () => {
+            if (deferredPrompt) {
+                deferredPrompt.prompt();
+                const { outcome } = await deferredPrompt.userChoice;
+                if (outcome === 'accepted') {
+                    document.getElementById('pwaInstallContainer').classList.add('hidden');
+                }
+                deferredPrompt = null;
+            }
+        });
+
+        // Dynamic inline Service Worker for complete offline capabilities
+        if ('serviceWorker' in navigator) {
+            const swCode = `
+                const CACHE_NAME = 'netacademy-v3';
+                self.addEventListener('install', (e) => {
+                    e.waitUntil(caches.open(CACHE_NAME).then(cache => cache.addAll(['./'])));
+                });
+                self.addEventListener('fetch', (e) => {
+                    e.respondWith(caches.match(e.request).then(res => res || fetch(e.request)));
+                });
+            `;
+            const blob = new Blob([swCode], { type: 'text/javascript' });
+            const swUrl = URL.createObjectURL(blob);
+            navigator.serviceWorker.register(swUrl).catch(err => console.log('SW reg error', err));
+        }
+
+        // --- NAVIGATION LOGIC ---
+        function switchTab(tabId) {
+            document.querySelectorAll('.tab-content').forEach(el => el.classList.add('hidden'));
+            document.querySelectorAll('.nav-btn').forEach(btn => {
+                btn.classList.remove('bg-slate-800', 'text-cyan-400');
+                btn.classList.add('text-slate-300');
+            });
+
+            const targetSection = document.getElementById(tabId);
+            if (targetSection) targetSection.classList.remove('hidden');
+
+            const activeBtn = document.querySelector(`[data-tab="${tabId}"]`);
+            if (activeBtn) {
+                activeBtn.classList.add('bg-slate-800', 'text-cyan-400');
+            }
+
+            const sidebar = document.getElementById('sidebar');
+            if (!sidebar.classList.contains('-translate-x-full')) {
+                sidebar.classList.add('-translate-x-full');
+            }
+        }
+
+        document.getElementById('mobileMenuBtn').addEventListener('click', () => {
+            document.getElementById('sidebar').classList.toggle('-translate-x-full');
+        });
+
+        // --- OSI & ENCAPSULATION LOGIC ---
+        let encMode = 'enc'; // 'enc' or 'dec'
+
+        function setEncapsulationMode(mode) {
+            encMode = mode;
+            const encBtn = document.getElementById('modeEncBtn');
+            const decBtn = document.getElementById('modeDecBtn');
+
+            if (mode === 'enc') {
+                encBtn.className = "px-3 py-1 rounded-md bg-cyan-500 text-slate-950 font-bold transition-all";
+                decBtn.className = "px-3 py-1 rounded-md text-slate-400 transition-all";
+            } else {
+                decBtn.className = "px-3 py-1 rounded-md bg-emerald-500 text-slate-950 font-bold transition-all";
+                encBtn.className = "px-3 py-1 rounded-md text-slate-400 transition-all";
+            }
+            renderEncSteps();
+            setEncapsulationStep(1);
+        }
+
+        function renderEncSteps() {
+            const container = document.getElementById('encStepButtons');
+            const steps = encMode === 'enc' ? [
+                { s: 1, title: '1. Uygulama', sub: 'Ham Veri' },
+                { s: 2, title: '2. Taşıma', sub: '+ L4 TCP Header' },
+                { s: 3, title: '3. Ağ', sub: '+ L3 IP Header' },
+                { s: 4, title: '4. Veri Bağı', sub: '+ L2 MAC & FCS' },
+                { s: 5, title: '5. Fiziksel', sub: 'Bit Sinyali (0101)' }
+            ] : [
+                { s: 1, title: '1. Fiziksel', sub: 'Ham Sinyal Alındı' },
+                { s: 2, title: '2. Veri Bağı', sub: 'MAC & FCS Doğrulama' },
+                { s: 3, title: '3. Ağ', sub: 'IP Başlığı Çıkarıldı' },
+                { s: 4, title: '4. Taşıma', sub: 'Port Okundu' },
+                { s: 5, title: '5. Uygulama', sub: 'Veri Uygulamada' }
+            ];
+
+            container.innerHTML = steps.map(st => `
+                <button onclick="setEncapsulationStep(${st.s})" id="enc-step-${st.s}" class="enc-btn p-2.5 rounded-xl border border-slate-800 bg-slate-900/50 text-slate-400 transition-all text-xs font-medium">
+                    ${st.title}<br><span class="text-[10px] text-slate-500">${st.sub}</span>
+                </button>
+            `).join('');
+        }
+
+        function setEncapsulationStep(step) {
+            for(let i = 1; i <= 5; i++) {
+                const btn = document.getElementById(`enc-step-${i}`);
+                if (btn) {
+                    if (i === step) {
+                        btn.className = `enc-btn p-2.5 rounded-xl border ${encMode === 'enc' ? 'border-cyan-500 bg-cyan-950/50 text-cyan-300 glow-cyan' : 'border-emerald-500 bg-emerald-950/50 text-emerald-300 glow-emerald'} text-xs font-bold transition-all`;
+                    } else {
+                        btn.className = "enc-btn p-2.5 rounded-xl border border-slate-800 bg-slate-900/50 text-slate-400 transition-all text-xs font-medium";
+                    }
+                }
+            }
+
+            const visual = document.getElementById('encapsulationVisual');
+            const desc = document.getElementById('encapsulationDesc');
+
+            if (encMode === 'enc') {
+                if(step === 1) {
+                    visual.innerHTML = `<div class="bg-emerald-500/20 border border-emerald-500/50 text-emerald-300 px-4 py-3 rounded-lg text-xs font-mono">[ Veri: "HTTPS GET /index.html" ]</div>`;
+                    desc.innerText = "1. Uygulama Katmanı: Kullanıcının ürettiği ham veri hazırlanır.";
+                } else if(step === 2) {
+                    visual.innerHTML = `
+                        <div class="bg-purple-500/20 border border-purple-500/50 text-purple-300 px-3 py-2 rounded-lg text-xs font-mono">[ L4 TCP: Port 443 ]</div>
+                        <div class="bg-emerald-500/20 border border-emerald-500/50 text-emerald-300 px-3 py-2 rounded-lg text-xs font-mono">[ Veri ]</div>
+                    `;
+                    desc.innerText = "2. Taşıma Katmanı (Segment): Hedef ve kaynak port numaraları eklenir.";
+                } else if(step === 3) {
+                    visual.innerHTML = `
+                        <div class="bg-cyan-500/20 border border-cyan-500/50 text-cyan-300 px-3 py-2 rounded-lg text-xs font-mono">[ L3 IP: 192.168.1.100 ]</div>
+                        <div class="bg-purple-500/20 border border-purple-500/50 text-purple-300 px-3 py-2 rounded-lg text-xs font-mono">[ TCP ]</div>
+                        <div class="bg-emerald-500/20 border border-emerald-500/50 text-emerald-300 px-3 py-2 rounded-lg text-xs font-mono">[ Veri ]</div>
+                    `;
+                    desc.innerText = "3. Ağ Katmanı (Paket): Hedef ve kaynak IP adresi eklenir.";
+                } else if(step === 4) {
+                    visual.innerHTML = `
+                        <div class="bg-amber-500/20 border border-amber-500/50 text-amber-300 px-3 py-2 rounded-lg text-xs font-mono">[ L2 MAC Header ]</div>
+                        <div class="bg-cyan-500/20 border border-cyan-500/50 text-cyan-300 px-3 py-2 rounded-lg text-xs font-mono">[ IP ]</div>
+                        <div class="bg-purple-500/20 border border-purple-500/50 text-purple-300 px-3 py-2 rounded-lg text-xs font-mono">[ TCP ]</div>
+                        <div class="bg-emerald-500/20 border border-emerald-500/50 text-emerald-300 px-3 py-2 rounded-lg text-xs font-mono">[ Veri ]</div>
+                        <div class="bg-rose-500/20 border border-rose-500/50 text-rose-300 px-2 py-2 rounded-lg text-xs font-mono">[ FCS ]</div>
+                    `;
+                    desc.innerText = "4. Veri Bağı Katmanı (Çerçeve): MAC adresleri ve FCS hata denetim kuyruğu eklenir.";
+                } else if(step === 5) {
+                    visual.innerHTML = `<div class="font-mono text-cyan-400 tracking-widest text-sm md:text-base animate-pulse">01001000 01100101 01101100 01101100 01101111</div>`;
+                    desc.innerText = "5. Fiziksel Katman: Tüm paket elektrik/ışık sinyaline dönüştürülerek kablodan iletilir.";
+                }
+            } else {
+                // Decapsulation Flow
+                if(step === 1) {
+                    visual.innerHTML = `<div class="font-mono text-emerald-400 tracking-widest text-sm md:text-base animate-pulse">01001000 01100101 01101100 01101100 01101111</div>`;
+                    desc.innerText = "1. Fiziksel Katman: Kablodan ham bit sinyali alındı.";
+                } else if(step === 2) {
+                    visual.innerHTML = `<div class="bg-amber-500/20 border border-amber-500/50 text-amber-300 px-3 py-2 rounded-lg text-xs font-mono">[ L2 MAC Header Çözümlendi & FCS Doğrulandı ]</div>`;
+                    desc.innerText = "2. Veri Bağı Katmanı: MAC adresi doğrulandı ve L2 başlığı soyuldu.";
+                } else if(step === 3) {
+                    visual.innerHTML = `<div class="bg-cyan-500/20 border border-cyan-500/50 text-cyan-300 px-3 py-2 rounded-lg text-xs font-mono">[ L3 IP Header Çözümlendi (Hedef IP Doğru) ]</div>`;
+                    desc.innerText = "3. Ağ Katmanı: IP paket başlığı okundu ve soyuldu.";
+                } else if(step === 4) {
+                    visual.innerHTML = `<div class="bg-purple-500/20 border border-purple-500/50 text-purple-300 px-3 py-2 rounded-lg text-xs font-mono">[ L4 TCP Port 443 İşlendi ]</div>`;
+                    desc.innerText = "4. Taşıma Katmanı: Port numarasına göre ilgili uygulamaya yönlendirildi.";
+                } else if(step === 5) {
+                    visual.innerHTML = `<div class="bg-emerald-500/20 border border-emerald-500/50 text-emerald-300 px-4 py-3 rounded-lg text-xs font-mono">[ Saf Veri: "HTTPS GET /index.html" ]</div>`;
+                    desc.innerText = "5. Uygulama Katmanı: Veri kullanıcıya/uygulamaya eksiksiz sunuldu.";
+                }
+            }
+        }
+
+        function renderOsiLayers() {
+            const container = document.getElementById('osiLayersContainer');
+            container.innerHTML = osiData.map(item => `
+                <div onclick="selectLayer(${item.layer})" class="p-3 rounded-xl bg-slate-950 border border-slate-800 hover:border-cyan-500/50 cursor-pointer transition-all flex items-center justify-between group">
+                    <div class="flex items-center space-x-3">
+                        <span class="w-7 h-7 rounded-lg bg-cyan-500/10 text-cyan-400 font-bold text-xs flex items-center justify-center border border-cyan-500/20 group-hover:bg-cyan-500 group-hover:text-slate-950 transition-colors">
+                            ${item.layer}
+                        </span>
+                        <span class="text-xs md:text-sm font-semibold text-slate-200 group-hover:text-cyan-400 transition-colors">${item.name}</span>
+                    </div>
+                    <span class="text-[11px] font-mono text-slate-500 bg-slate-900 px-2 py-1 rounded border border-slate-800">${item.pdu}</span>
+                </div>
+            `).join('');
+
+            const tcpContainer = document.getElementById('tcpLayersContainer');
+            tcpContainer.innerHTML = tcpData.map(item => `
+                <div class="p-3 rounded-xl bg-slate-950 border border-slate-800 flex items-center justify-between">
+                    <div>
+                        <span class="text-xs font-bold text-emerald-400 block">${item.name}</span>
+                        <span class="text-[10px] text-slate-500">${item.desc}</span>
+                    </div>
+                    <span class="text-[10px] font-mono text-slate-400 bg-emerald-950/40 px-2 py-1 rounded border border-emerald-800/30">${item.osiEquiv}</span>
+                </div>
+            `).join('');
+
+            selectLayer(7);
+        }
+
+        function selectLayer(layerNum) {
+            const layer = osiData.find(l => l.layer === layerNum);
+            if (!layer) return;
+
+            document.getElementById('detailLayerBadge').innerText = `Katman ${layer.layer} (OSI L${layer.layer})`;
+            document.getElementById('detailPduBadge').innerText = `PDU: ${layer.pdu}`;
+            document.getElementById('detailTitle').innerText = layer.name;
+            document.getElementById('detailDesc').innerText = layer.desc;
+
+            const protoContainer = document.getElementById('detailProtocols');
+            protoContainer.innerHTML = layer.protocols.map(p => `
+                <span class="px-2.5 py-1 bg-slate-900 text-cyan-300 rounded-md text-xs font-mono border border-slate-800">${p}</span>
+            `).join('');
+        }
+
+        // --- SUBNET CALCULATOR LOGIC ---
+        function populateCidrOptions() {
+            const select = document.getElementById('calcCidr');
+            for(let i = 8; i <= 30; i++) {
+                const opt = document.createElement('option');
+                opt.value = i;
+                opt.innerText = `/${i}`;
+                if(i === 24) opt.selected = true;
+                select.appendChild(opt);
+            }
+        }
+
+        function calculateSubnet() {
+            const ipStr = document.getElementById('calcIp').value.trim();
+            const cidr = parseInt(document.getElementById('calcCidr').value);
+
+            const ipParts = ipStr.split('.').map(Number);
+            if(ipParts.length !== 4 || ipParts.some(p => isNaN(p) || p < 0 || p > 255)) return;
+
+            const ipInt = (ipParts[0] << 24) | (ipParts[1] << 16) | (ipParts[2] << 8) | ipParts[3];
+            const maskInt = (0xFFFFFFFF << (32 - cidr)) >>> 0;
+            const netInt = (ipInt & maskInt) >>> 0;
+            const broadcastInt = (netInt | (~maskInt >>> 0)) >>> 0;
+            const wildcardInt = (~maskInt) >>> 0;
+
+            const totalHosts = Math.pow(2, 32 - cidr);
+            const usableHosts = totalHosts > 2 ? totalHosts - 2 : 0;
+
+            const intToIp = (num) => [(num >>> 24) & 255, (num >>> 16) & 255, (num >>> 8) & 255, num & 255].join('.');
+            const toBinaryStr = (num) => {
+                return [(num >>> 24) & 255, (num >>> 16) & 255, (num >>> 8) & 255, num & 255]
+                    .map(n => n.toString(2).padStart(8, '0')).join('.');
+            };
+
+            document.getElementById('resSubnetMask').innerText = intToIp(maskInt);
+            document.getElementById('resNetworkAddr').innerText = intToIp(netInt);
+            document.getElementById('resBroadcastAddr').innerText = intToIp(broadcastInt);
+            document.getElementById('resWildcardMask').innerText = intToIp(wildcardInt);
+            document.getElementById('resUsableRange').innerText = usableHosts > 0 ? `${intToIp(netInt + 1)} - ${intToIp(broadcastInt - 1)}` : 'Yok';
+            document.getElementById('resUsableHosts').innerText = usableHosts.toLocaleString();
+
+            // IP Class determination
+            let ipClass = "Sınıf C";
+            if (ipParts[0] < 128) ipClass = "Sınıf A";
+            else if (ipParts[0] < 192) ipClass = "Sınıf B";
+            else if (ipParts[0] < 224) ipClass = "Sınıf C";
+            else ipClass = "Sınıf D / E";
+
+            if ((ipParts[0] === 10) || (ipParts[0] === 172 && ipParts[1] >= 16 && ipParts[1] <= 31) || (ipParts[0] === 192 && ipParts[1] === 168)) {
+                ipClass += " (Özel / Private)";
+            } else {
+                ipClass += " (Genel / Public)";
+            }
+            document.getElementById('resIpClass').innerText = ipClass;
+
+            // Render Binary
+            document.getElementById('binaryIp').innerText = toBinaryStr(ipInt);
+            document.getElementById('binaryMask').innerText = toBinaryStr(maskInt);
+        }
+
+        // --- TOPOLOGY RENDERER ---
+        function renderTopology(type) {
+            const container = document.getElementById('topologyCanvasContainer');
+            const info = document.getElementById('topologyInfo');
+
+            if(type === 'star') {
+                container.innerHTML = `
+                    <svg class="w-full h-64" viewBox="0 0 300 200">
+                        <line x1="150" y1="100" x2="60" y2="50" stroke="#06b6d4" stroke-width="2" />
+                        <line x1="150" y1="100" x2="240" y2="50" stroke="#06b6d4" stroke-width="2" />
+                        <line x1="150" y1="100" x2="60" y2="150" stroke="#06b6d4" stroke-width="2" />
+                        <line x1="150" y1="100" x2="240" y2="150" stroke="#06b6d4" stroke-width="2" />
+                        <circle cx="150" cy="100" r="22" fill="#0f172a" stroke="#06b6d4" stroke-width="3" />
+                        <text x="150" y="104" text-anchor="middle" fill="#22d3ee" font-size="10" font-weight="bold">Switch</text>
+                        <circle cx="60" cy="50" r="14" fill="#1e293b" stroke="#34d399" stroke-width="2" />
+                        <circle cx="240" cy="50" r="14" fill="#1e293b" stroke="#34d399" stroke-width="2" />
+                        <circle cx="60" cy="150" r="14" fill="#1e293b" stroke="#34d399" stroke-width="2" />
+                        <circle cx="240" cy="150" r="14" fill="#1e293b" stroke="#34d399" stroke-width="2" />
+                        <!-- Animated Packet -->
+                        <circle cx="60" cy="50" r="4" fill="#f59e0b">
+                            <animate attributeName="cx" values="60;150;240" dur="2s" repeatCount="indefinite"/>
+                            <animate attributeName="cy" values="50;100;150" dur="2s" repeatCount="indefinite"/>
+                        </circle>
+                    </svg>
+                `;
+                info.innerHTML = `
+                    <h4 class="text-base font-bold text-white">Yıldız (Star) Topolojisi</h4>
+                    <p class="text-xs text-slate-400 leading-relaxed">Merkezi bir Switch'e bağlı cihazlar. Bir kablo kopsa dahi diğer cihazlar etkilenmez.</p>
+                `;
+            } else if(type === 'mesh') {
+                container.innerHTML = `
+                    <svg class="w-full h-64" viewBox="0 0 300 200">
+                        <polygon points="150,30 240,90 200,170 100,170 60,90" fill="none" stroke="#10b981" stroke-width="2" opacity="0.6"/>
+                        <line x1="150" y1="30" x2="200" y2="170" stroke="#10b981" stroke-width="1.5" opacity="0.4"/>
+                        <line x1="60" y1="90" x2="240" y2="90" stroke="#10b981" stroke-width="1.5" opacity="0.4"/>
+                        <circle cx="150" cy="30" r="12" fill="#0f172a" stroke="#10b981" stroke-width="2"/>
+                        <circle cx="240" cy="90" r="12" fill="#0f172a" stroke="#10b981" stroke-width="2"/>
+                        <circle cx="200" cy="170" r="12" fill="#0f172a" stroke="#10b981" stroke-width="2"/>
+                        <circle cx="100" cy="170" r="12" fill="#0f172a" stroke="#10b981" stroke-width="2"/>
+                        <circle cx="60" cy="90" r="12" fill="#0f172a" stroke="#10b981" stroke-width="2"/>
+                    </svg>
+                `;
+                info.innerHTML = `
+                    <h4 class="text-base font-bold text-white">Mesh (Ağbağ) Topolojisi</h4>
+                    <p class="text-xs text-slate-400 leading-relaxed">Yüksek yedeklilik sunan tam bağlı ağ mimarisi. Verimerkezlerinde kullanılır.</p>
+                `;
+            } else if(type === 'bus') {
+                container.innerHTML = `
+                    <svg class="w-full h-64" viewBox="0 0 300 200">
+                        <line x1="30" y1="100" x2="270" y2="100" stroke="#f59e0b" stroke-width="4"/>
+                        <line x1="70" y1="100" x2="70" y2="50" stroke="#f59e0b" stroke-width="2"/>
+                        <line x1="150" y1="100" x2="150" y2="150" stroke="#f59e0b" stroke-width="2"/>
+                        <line x1="230" y1="100" x2="230" y2="50" stroke="#f59e0b" stroke-width="2"/>
+                        <circle cx="70" cy="50" r="12" fill="#0f172a" stroke="#f59e0b" stroke-width="2"/>
+                        <circle cx="150" cy="150" r="12" fill="#0f172a" stroke="#f59e0b" stroke-width="2"/>
+                        <circle cx="230" cy="50" r="12" fill="#0f172a" stroke="#f59e0b" stroke-width="2"/>
+                    </svg>
+                `;
+                info.innerHTML = `
+                    <h4 class="text-base font-bold text-white">Veriyolu (Bus) Topolojisi</h4>
+                    <p class="text-xs text-slate-400 leading-relaxed">Eski nesil omurga kablo mimarisi. Omurga koparsa tüm ağ çöker.</p>
+                `;
+            } else if(type === 'ring') {
+                container.innerHTML = `
+                    <svg class="w-full h-64" viewBox="0 0 300 200">
+                        <circle cx="150" cy="100" r="60" fill="none" stroke="#a855f7" stroke-width="3"/>
+                        <circle cx="150" cy="40" r="12" fill="#0f172a" stroke="#a855f7" stroke-width="2"/>
+                        <circle cx="210" cy="100" r="12" fill="#0f172a" stroke="#a855f7" stroke-width="2"/>
+                        <circle cx="150" cy="160" r="12" fill="#0f172a" stroke="#a855f7" stroke-width="2"/>
+                        <circle cx="90" cy="100" r="12" fill="#0f172a" stroke="#a855f7" stroke-width="2"/>
+                    </svg>
+                `;
+                info.innerHTML = `
+                    <h4 class="text-base font-bold text-white">Halka (Ring) Topolojisi</h4>
+                    <p class="text-xs text-slate-400 leading-relaxed">Verinin tek bir yönde halka boyunca sırayla aktarıldığı Token Ring yapısı.</p>
+                `;
+            }
+        }
+
+        // --- PORTS & PROTOCOLS LOGIC ---
+        function renderPortsTable(filterType = 'ALL', searchQuery = '') {
+            const tbody = document.getElementById('portsTableBody');
+            tbody.innerHTML = '';
+
+            const filtered = portsDatabase.filter(item => {
+                const matchesType = filterType === 'ALL' || item.type === filterType || (filterType === 'TCP' && item.protocol.includes('TCP')) || (filterType === 'UDP' && item.protocol.includes('UDP'));
+                const matchesQuery = item.port.toString().includes(searchQuery) ||
+                                     item.name.toLowerCase().includes(searchQuery.toLowerCase()) ||
+                                     item.desc.toLowerCase().includes(searchQuery.toLowerCase());
+                return matchesType && matchesQuery;
+            });
+
+            filtered.forEach(item => {
+                const tr = document.createElement('tr');
+                tr.className = "hover:bg-slate-900/50 transition-colors";
+                tr.innerHTML = `
+                    <td class="p-3.5 font-mono font-bold text-amber-400">${item.port}</td>
+                    <td class="p-3.5 font-mono text-cyan-300 font-semibold">${item.name}</td>
+                    <td class="p-3.5"><span class="px-2 py-0.5 rounded text-[10px] font-mono bg-slate-900 border border-slate-800 text-slate-300">${item.protocol}</span></td>
+                    <td class="p-3.5 text-slate-300 text-xs">${item.desc}</td>
+                    <td class="p-3.5 text-xs text-slate-400 font-mono">${item.sec}</td>
+                `;
+                tbody.appendChild(tr);
+            });
+        }
+
+        function filterPorts(type) {
+            document.querySelectorAll('#portFilterBtns button').forEach(b => {
+                b.className = "port-filter text-xs px-3 py-1.5 rounded-lg bg-slate-900 text-slate-300 hover:bg-slate-800 transition-all";
+            });
+            event.target.className = "port-filter active-filter text-xs px-3 py-1.5 rounded-lg bg-amber-500 text-slate-950 font-bold transition-all";
+            renderPortsTable(type, document.getElementById('portSearch').value);
+        }
+
+        // --- CLI TERMINAL SIMULATOR ---
+        function runCliCommand(cmdStr) {
+            document.getElementById('terminalInput').value = cmdStr;
+            handleTerminalSubmit();
+        }
+
+        function handleTerminalSubmit() {
+            const input = document.getElementById('terminalInput');
+            const output = document.getElementById('terminalOutput');
+            const cmd = input.value.trim();
+            if(!cmd) return;
+
+            const cmdLine = document.createElement('div');
+            cmdLine.className = "text-white font-bold mt-2";
+            cmdLine.innerText = `C:\\Users\\Admin> ${cmd}`;
+            output.appendChild(cmdLine);
+
+            const response = document.createElement('div');
+            response.className = "text-slate-300 whitespace-pre-line text-xs font-mono mb-2";
+
+            const lowerCmd = cmd.toLowerCase();
+
+            if(lowerCmd.startsWith('ping')) {
+                const target = cmd.split(' ')[1] || '8.8.8.8';
+                response.innerText = `Pinging ${target} with 32 bytes of data:
+Reply from ${target}: bytes=32 time=12ms TTL=56
+Reply from ${target}: bytes=32 time=11ms TTL=56
+Reply from ${target}: bytes=32 time=14ms TTL=56
+Reply from ${target}: bytes=32 time=10ms TTL=56
+
+Ping statistics for ${target}:
+    Packets: Sent = 4, Received = 4, Lost = 0 (0% loss)`;
+            } else if(lowerCmd.startsWith('tracert')) {
+                response.innerText = `Tracing route to ${cmd.split(' ')[1] || 'google.com'} over a maximum of 30 hops:
+
+  1     1 ms     1 ms     1 ms  192.168.1.1 [Modem/Gateway]
+  2     9 ms     8 ms    10 ms  212.156.40.1 [ISP Metro]
+  3    14 ms    13 ms    14 ms  8.8.8.8 [Target Destination]
+
+Trace complete.`;
+            } else if(lowerCmd.startsWith('ipconfig')) {
+                response.innerText = `Windows IP Configuration
+
+Ethernet adapter Wi-Fi:
+   IPv4 Address. . . . . . . . . . . : 192.168.1.100
+   Subnet Mask . . . . . . . . . . . : 255.255.255.0
+   Default Gateway . . . . . . . . . : 192.168.1.1
+   DNS Servers . . . . . . . . . . . : 1.1.1.1, 8.8.8.8`;
+            } else if(lowerCmd.startsWith('nslookup')) {
+                response.innerText = `Server:  one.one.one.one
+Address:  1.1.1.1
+
+Non-authoritative answer:
+Name:    ${cmd.split(' ')[1] || 'example.com'}
+Addresses: 93.184.216.34`;
+            } else if(lowerCmd.startsWith('netstat')) {
+                response.innerText = `Active Connections
+
+  Proto  Local Address          Foreign Address        State
+  TCP    192.168.1.100:54321    104.21.28.115:443      ESTABLISHED
+  TCP    192.168.1.100:54322    142.250.185.206:80     ESTABLISHED`;
+            } else if(lowerCmd.startsWith('arp')) {
+                response.innerText = `Interface: 192.168.1.100 --- 0x3
+  Internet Address      Physical Address      Type
+  192.168.1.1           a4-91-b1-cd-22-01     dynamic
+  192.168.1.255         ff-ff-ff-ff-ff-ff     static`;
+            } else if(lowerCmd === 'help') {
+                response.innerText = `Kullanılabilir Komutlar:
+ - ping [IP/Domain]     : Hedefe ICMP istek paketi atar.
+ - tracert [IP/Domain]  : Yönlendirici hop noktalarını listeler.
+ - ipconfig /all        : Ağ arayüz detaylarını görüntüler.
+ - nslookup [Domain]    : DNS IP çözümlemesi yapar.
+ - netstat -an          : Aktif port bağlantılarını gösterir.
+ - arp -a               : ARP tablosunu (IP-MAC) listeler.
+ - clear                : Terminal ekranını temizler.`;
+            } else if(lowerCmd === 'clear') {
+                clearTerminal();
+                input.value = '';
+                return;
+            } else {
+                response.innerText = `'${cmd}' komutu tanınamadı. Kullanılabilir komutları görmek için 'help' yazın.`;
+            }
+
+            output.appendChild(response);
+            input.value = '';
+            output.scrollTop = output.scrollHeight;
+        }
+
+        function clearTerminal() {
+            document.getElementById('terminalOutput').innerHTML = '<p class="text-slate-500">// Terminal temizlendi.</p>';
+        }
+
+        // --- QUIZ ENGINE LOGIC ---
+        let currentQuizIndex = 0;
+        let quizScore = 0;
+
+        function renderQuizQuestion() {
+            const container = document.getElementById('quizContainer');
+            const q = quizQuestions[currentQuizIndex];
+
+            document.getElementById('quizProgress').innerText = `Soru ${currentQuizIndex + 1} / ${quizQuestions.length}`;
+            document.getElementById('quizScore').innerText = `Puan: ${quizScore}`;
+
+            container.innerHTML = `
+                <h4 class="text-base md:text-lg font-bold text-white mb-4 leading-snug">${q.q}</h4>
+                <div class="space-y-2.5 mb-6">
+                    ${q.options.map((opt, i) => `
+                        <button onclick="checkAnswer(${i})" class="quiz-opt-btn w-full text-left p-3.5 rounded-xl bg-slate-950 border border-slate-800 hover:border-violet-500/50 transition-all text-xs md:text-sm font-medium text-slate-200">
+                            ${opt}
+                        </button>
+                    `).join('')}
+                </div>
+                <div id="quizExplanation" class="hidden p-4 rounded-xl text-xs leading-relaxed font-mono"></div>
+            `;
+        }
+
+        function checkAnswer(selectedIdx) {
+            const q = quizQuestions[currentQuizIndex];
+            const explanation = document.getElementById('quizExplanation');
+            const buttons = document.querySelectorAll('.quiz-opt-btn');
+
+            buttons.forEach(b => b.disabled = true);
+
+            if(selectedIdx === q.answer) {
+                buttons[selectedIdx].classList.add('bg-emerald-950/60', 'border-emerald-500', 'text-emerald-300');
+                quizScore += 20;
+                explanation.className = "p-4 rounded-xl text-xs leading-relaxed font-mono bg-emerald-950/30 border border-emerald-500/30 text-emerald-300";
+                explanation.innerHTML = `<i class="fa-solid fa-circle-check mr-2"></i><strong>Doğru!</strong> ${q.explanation}`;
+            } else {
+                buttons[selectedIdx].classList.add('bg-rose-950/60', 'border-rose-500', 'text-rose-300');
+                buttons[q.answer].classList.add('bg-emerald-950/60', 'border-emerald-500', 'text-emerald-300');
+                explanation.className = "p-4 rounded-xl text-xs leading-relaxed font-mono bg-rose-950/30 border border-rose-500/30 text-rose-300";
+                explanation.innerHTML = `<i class="fa-solid fa-circle-xmark mr-2"></i><strong>Yanlış.</strong> ${q.explanation}`;
+            }
+
+            explanation.classList.remove('hidden');
+
+            // Add Next Button
+            const nextBtn = document.createElement('button');
+            nextBtn.className = "mt-4 px-5 py-2.5 bg-violet-500 hover:bg-violet-400 text-slate-950 font-bold rounded-xl text-xs transition-all flex items-center space-x-2 ml-auto";
+            nextBtn.innerHTML = currentQuizIndex < quizQuestions.length - 1 ? '<span>Sonraki Soru</span><i class="fa-solid fa-arrow-right"></i>' : '<span>Sınavı Tamamla</span>';
+            nextBtn.onclick = () => {
+                if(currentQuizIndex < quizQuestions.length - 1) {
+                    currentQuizIndex++;
+                    renderQuizQuestion();
+                } else {
+                    showQuizResult();
+                }
+            };
+            explanation.appendChild(nextBtn);
+        }
+
+        function showQuizResult() {
+            const container = document.getElementById('quizContainer');
+            container.innerHTML = `
+                <div class="text-center space-y-4 py-6">
+                    <div class="w-16 h-16 rounded-2xl bg-violet-500/20 text-violet-400 border border-violet-500/30 flex items-center justify-center mx-auto text-3xl">
+                        <i class="fa-solid fa-trophy"></i>
+                    </div>
+                    <h3 class="text-2xl font-bold text-white">Sınav Tamamlandı!</h3>
+                    <p class="text-sm text-slate-400">Toplam Puanınız: <span class="text-emerald-400 font-bold text-lg font-mono">${quizScore} / 100</span></p>
+                    <button onclick="resetQuiz()" class="px-6 py-2.5 bg-violet-500 hover:bg-violet-400 text-slate-950 font-bold rounded-xl text-xs transition-all inline-flex items-center space-x-2">
+                        <i class="fa-solid fa-rotate-right"></i><span>Yeniden Başlat</span>
+                    </button>
+                </div>
+            `;
+        }
+
+        function resetQuiz() {
+            currentQuizIndex = 0;
+            quizScore = 0;
+            renderQuizQuestion();
+        }
+
+        // --- GLOBAL SEARCH LOGIC ---
+        document.getElementById('globalSearch').addEventListener('input', (e) => {
+            const query = e.target.value.toLowerCase().trim();
+            if(!query) return;
+
+            if(query.includes('osi') || query.includes('katman') || query.includes('tcp') || query.includes('encap')) switchTab('osi-model');
+            else if(query.includes('ip') || query.includes('subnet') || query.includes('cidr') || query.includes('vlsm') || query.includes('mask')) switchTab('subnetting');
+            else if(query.includes('switch') || query.includes('router') || query.includes('star') || query.includes('mesh')) switchTab('devices-topologies');
+            else if(query.includes('port') || query.includes('dns') || query.includes('ssh') || query.includes('http')) switchTab('protocols-ports');
+            else if(query.includes('ping') || query.includes('cmd') || query.includes('cli') || query.includes('tracert')) switchTab('cli-simulator');
+            else if(query.includes('test') || query.includes('quiz') || query.includes('ccna') || query.includes('sınav')) switchTab('quiz-section');
+        });
+
+        // Event Listeners for Input & Terminal
+        document.getElementById('calcIp').addEventListener('input', calculateSubnet);
+        document.getElementById('calcCidr').addEventListener('change', calculateSubnet);
+        document.getElementById('portSearch').addEventListener('input', (e) => renderPortsTable('ALL', e.target.value));
+        document.getElementById('terminalInput').addEventListener('keypress', (e) => {
+            if(e.key === 'Enter') handleTerminalSubmit();
+        });
+
+        // Initialization
+        window.onload = function() {
+            renderOsiLayers();
+            renderEncSteps();
+            setEncapsulationStep(1);
+            populateCidrOptions();
+            calculateSubnet();
+            renderTopology('star');
+            renderPortsTable();
+            renderQuizQuestion();
+        };
+    </script>
+</body>
+</html>
