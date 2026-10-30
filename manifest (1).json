@@ -1,0 +1,12 @@
+{
+  "background_color": "#3243ad",
+  "dir": "ltr",
+  "display": "standalone",
+  "name": "NetAcademy-Pro",
+  "orientation": "any",
+  "scope": "/",
+  "short_name": "NetA-Pro",
+  "start_url": "/",
+  "theme_color": "#ffffff",
+  "id": "NetAcademy-Pro"
+}
