@@ -1,13 +1,13 @@
 {
   "background_color": "#3243ad",
-  "description": "NetAcademy Pro Egitim Platformu", 
+  "description": "NetAcademy Pro Egitim Platformu",
   "dir": "ltr",
   "display": "standalone",
   "name": "NetAcademy-Pro",
   "orientation": "any",
-  "scope": "/",
+  "scope": "/NetAcademy-Pro/",
   "short_name": "NetA-Pro",
-  "start_url": "/",
+  "start_url": "/NetAcademy-Pro/",
   "theme_color": "#ffffff",
   "id": "NetAcademy-Pro"
 }
