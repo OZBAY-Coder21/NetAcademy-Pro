@@ -1,13 +1,13 @@
 {
-  "background_color": "#3243ad",
-  "description": "NetAcademy Pro Egitim Platformu",
-  "dir": "ltr",
-  "display": "standalone",
-  "name": "NetAcademy-Pro",
-  "orientation": "any",
-  "scope": "/NetAcademy-Pro/",
-  "short_name": "NetA-Pro",
-  "start_url": "/NetAcademy-Pro/",
-  "theme_color": "#ffffff",
-  "id": "NetAcademy-Pro"
+    "background_color": "#3243ad",
+    "description": "NetAcademy Pro Egitim Platformu",
+    "dir": "ltr",
+    "display": "standalone",
+    "name": "NetAcademy-Pro",
+    "orientation": "any",
+    "scope": "/NetAcademy-Pro/",
+    "short_name": "NetA-Pro",
+    "start_url": "/NetAcademy-Pro/index.html",
+    "theme_color": "#ffffff",
+    "id": "NetAcademy-Pro"
 }
