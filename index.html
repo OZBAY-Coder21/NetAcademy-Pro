@@ -29,28 +29,9 @@
     <link href="https://fonts.googleapis.com/css2?family=Fira+Code:wght@400;500;600&family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     
-    <!-- Dynamic Web App Manifest Injection via Blob -->
-    <script>
-        const manifestData = {
-            "name": "NetAcademy Pro",
-            "short_name": "NetAcademy",
-            "start_url": ".",
-            "display": "standalone",
-            "background_color": "#020617",
-            "theme_color": "#0f172a",
-            "icons": [{
-                "src": "data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><rect width='100' height='100' rx='20' fill='%2306b6d4'/><text x='50' y='65' font-size='50' text-anchor='middle' fill='white'>NET</text></svg>",
-                "sizes": "192x192 512x512",
-                "type": "image/svg+xml"
-            }]
-        };
-        const manifestBlob = new Blob([JSON.stringify(manifestData)], {type: 'application/json'});
-        const manifestURL = URL.createObjectURL(manifestBlob);
-        const link = document.createElement('link');
-        link.rel = 'manifest';
-        link.href = manifestURL;
-        document.head.appendChild(link);
-    </script>
+    <!-- Static Web App Manifest Link -->
+    <link rel="manifest" href="/NetAcademy-Pro/manifest.json">
+
     <style>
         body { font-family: 'Inter', sans-serif; background-color: #020617; color: #f8fafc; }
         .font-mono { font-family: 'Fira Code', monospace; }
@@ -560,7 +541,7 @@
             <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
                 <div class="glass-card rounded-2xl p-6 border border-slate-800 space-y-3">
                     <h3 class="text-base text-white font-bold flex items-center space-x-2 text-cyan-400">
-                        <i class="fa-solid fa-sitemap"></i><span>VLAN ve Trunking Konfigürasyonu</span>
+                        <i class="fa-solid fa-sitemap"></i><span>VLAN and Trunking Konfigürasyonu</span>
                     </h3>
                     <p class="text-xs text-slate-300 leading-relaxed">
                         Farklı departmanların trafiğini izole etmek için Switch portları ilgili VLAN'lere (örn: VLAN 10 - İK, VLAN 20 - Yazılım) atanır. Switch'ler arası bağlantı için port <strong>Trunk Mode (802.1Q)</strong> olarak ayarlanarak tüm VLAN etiketleri taşınır.
